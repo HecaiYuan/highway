@@ -340,6 +340,10 @@
 #endif
 #endif  // HWY_BROKEN_LOONGARCH
 
+//debug gcc-8.3.0 supports LSX & LASX either.
+#undef HWY_BROKEN_LOONGARCH
+#define HWY_BROKEN_LOONGARCH 0
+
 #ifndef HWY_BROKEN_Z14  // allow override
 #if HWY_ARCH_S390X
 #if HWY_COMPILER_CLANG && HWY_COMPILER_CLANG < 1900
@@ -365,7 +369,7 @@
    HWY_BROKEN_ARM7_BIG_ENDIAN | HWY_BROKEN_ARM7_WITHOUT_VFP4 | \
    HWY_BROKEN_NEON_BF16 | HWY_BROKEN_SVE | HWY_BROKEN_SVE2 |   \
    HWY_BROKEN_PPC10 | HWY_BROKEN_PPC_32BIT | HWY_BROKEN_RVV |  \
-   HWY_BROKEN_LOONGARCH | HWY_BROKEN_Z14)
+   HWY_BROKEN_Z14)
 
 #endif  // HWY_BROKEN_TARGETS
 
@@ -698,13 +702,6 @@
 //------------------------------------------------------------------------------
 // Choose targets for dynamic dispatch according to one of four policies
 
-// TODO: remove once HWY_LSX is actually supported
-#if HWY_ARCH_LOONGARCH && !defined(HWY_COMPILE_ONLY_SCALAR) && \
-    !defined(HWY_COMPILE_ONLY_EMU128)
-#undef HWY_COMPILE_ONLY_STATIC
-#define HWY_COMPILE_ONLY_EMU128
-#endif
-
 #if 1 < (defined(HWY_COMPILE_ONLY_SCALAR) + defined(HWY_COMPILE_ONLY_EMU128) + \
          defined(HWY_COMPILE_ONLY_STATIC))
 #error "Can only define one of HWY_COMPILE_ONLY_{SCALAR|EMU128|STATIC} - bug?"
@@ -769,7 +766,7 @@
 #endif  // HWY_HAVE_RUNTIME_DISPATCH_APPLE
 
 #ifndef HWY_HAVE_RUNTIME_DISPATCH_LINUX  // allow override
-#if (HWY_ARCH_ARM || HWY_ARCH_PPC || HWY_ARCH_S390X) && HWY_OS_LINUX && \
+#if (HWY_ARCH_ARM || HWY_ARCH_PPC || HWY_ARCH_S390X || HWY_ARCH_LOONGARCH) && HWY_OS_LINUX && \
     (HWY_COMPILER_GCC_ACTUAL || HWY_COMPILER_CLANG >= 1700) && HWY_HAVE_AUXV
 #define HWY_HAVE_RUNTIME_DISPATCH_LINUX 1
 #else
